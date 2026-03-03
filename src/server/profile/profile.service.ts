@@ -1,7 +1,12 @@
 import type { Database } from "../common/db-executor";
+import { tryService, type ServiceResult } from "../common/service-result";
 import type { TransactionManager } from "../common/transaction-manager";
 import { ProfileRepository } from "./profile.repository";
-import type { CreateProfileInput, UpdateProfileInput } from "./profile.types";
+import type {
+  CreateProfileInput,
+  Profile,
+  UpdateProfileInput,
+} from "./profile.types";
 
 export class ProfileService {
   constructor(
@@ -10,50 +15,64 @@ export class ProfileService {
     private readonly profileRepository: ProfileRepository,
   ) {}
 
-  findById(id: string) {
-    return this.profileRepository.findById(this.database, id);
-  }
-
-  findByAuthUserId(authUserId: string) {
-    return this.profileRepository.findByAuthUserId(this.database, authUserId);
-  }
-
-  findByUsername(username: string) {
-    return this.profileRepository.findByUsername(this.database, username);
-  }
-
-  create(input: CreateProfileInput) {
-    return this.transactionManager.inTransaction((tx) =>
-      this.profileRepository.create({
-        executor: tx,
-        ...input,
-      }),
+  findById(id: string): Promise<ServiceResult<Profile | null>> {
+    return tryService("profile.findById", () =>
+      this.profileRepository.findById(this.database, id),
     );
   }
 
-  updateById(input: UpdateProfileInput) {
-    return this.transactionManager.inTransaction((tx) =>
-      this.profileRepository.updateById({
-        executor: tx,
-        ...input,
-      }),
+  findByAuthUserId(authUserId: string): Promise<ServiceResult<Profile | null>> {
+    return tryService("profile.findByAuthUserId", () =>
+      this.profileRepository.findByAuthUserId(this.database, authUserId),
     );
   }
 
-  createBulk(inputs: CreateProfileInput[]) {
-    return this.transactionManager.inTransaction(async (tx) => {
-      const created = [];
+  findByUsername(username: string): Promise<ServiceResult<Profile | null>> {
+    return tryService("profile.findByUsername", () =>
+      this.profileRepository.findByUsername(this.database, username),
+    );
+  }
 
-      for (const input of inputs) {
-        created.push(
-          await this.profileRepository.create({
-            executor: tx,
-            ...input,
-          }),
-        );
-      }
+  create(input: CreateProfileInput): Promise<ServiceResult<Profile>> {
+    return tryService("profile.create", () =>
+      this.transactionManager.inTransaction((tx) =>
+        this.profileRepository.create({
+          executor: tx,
+          ...input,
+        }),
+      ),
+    );
+  }
 
-      return created;
-    });
+  updateById(
+    input: UpdateProfileInput,
+  ): Promise<ServiceResult<Profile | null>> {
+    return tryService("profile.updateById", () =>
+      this.transactionManager.inTransaction((tx) =>
+        this.profileRepository.updateById({
+          executor: tx,
+          ...input,
+        }),
+      ),
+    );
+  }
+
+  createBulk(inputs: CreateProfileInput[]): Promise<ServiceResult<Profile[]>> {
+    return tryService("profile.createBulk", () =>
+      this.transactionManager.inTransaction(async (tx) => {
+        const created: Profile[] = [];
+
+        for (const input of inputs) {
+          created.push(
+            await this.profileRepository.create({
+              executor: tx,
+              ...input,
+            }),
+          );
+        }
+
+        return created;
+      }),
+    );
   }
 }

@@ -25,12 +25,13 @@ describe("UserBlockService", () => {
       userBlockRepository,
     );
 
-    await service.createBlock({
+    const result = await service.createBlock({
       blockerId: "p1",
       blockedProfileId: "p2",
       reason: "spam",
     });
 
+    expect(result).toEqual({ ok: true, data: undefined });
     expect(transactionManager.inTransaction).toHaveBeenCalledTimes(1);
     expect(userBlockRepository.createBlock).toHaveBeenCalledWith({
       executor: tx,
@@ -57,7 +58,7 @@ describe("UserBlockService", () => {
 
     const result = await service.listBlocksByBlocker("p1", 30);
 
-    expect(result).toBe(rows);
+    expect(result).toEqual({ ok: true, data: rows });
     expect(userBlockRepository.listBlocksByBlocker).toHaveBeenCalledWith(
       database,
       "p1",

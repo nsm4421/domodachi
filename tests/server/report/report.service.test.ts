@@ -34,7 +34,7 @@ describe("ReportService", () => {
       description: null,
     });
 
-    expect(result).toBe(created);
+    expect(result).toEqual({ ok: true, data: created });
     expect(transactionManager.inTransaction).toHaveBeenCalledTimes(1);
     expect(reportRepository.createProfileReport).toHaveBeenCalledWith({
       executor: tx,
@@ -80,7 +80,7 @@ describe("ReportService", () => {
       },
     ]);
 
-    expect(result).toEqual(createdRows);
+    expect(result).toEqual({ ok: true, data: createdRows });
     expect(transactionManager.inTransaction).toHaveBeenCalledTimes(1);
     expect(reportRepository.createProfileReport).toHaveBeenNthCalledWith(1, {
       executor: tx,

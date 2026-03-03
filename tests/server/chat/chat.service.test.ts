@@ -32,7 +32,7 @@ describe("ChatService", () => {
       content: "hello",
     });
 
-    expect(result).toBe(created);
+    expect(result).toEqual({ ok: true, data: created });
     expect(transactionManager.inTransaction).toHaveBeenCalledTimes(1);
     expect(chatRepository.sendDirectMessage).toHaveBeenCalledWith({
       executor: tx,
@@ -58,7 +58,7 @@ describe("ChatService", () => {
     );
     const result = await service.listMessagesByGroupChatId("g1", 20);
 
-    expect(result).toBe(rows);
+    expect(result).toEqual({ ok: true, data: rows });
     expect(chatRepository.listMessagesByGroupChatId).toHaveBeenCalledWith(
       database,
       "g1",

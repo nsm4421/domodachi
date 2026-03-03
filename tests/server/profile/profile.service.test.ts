@@ -25,7 +25,7 @@ describe("ProfileService", () => {
 
     const result = await service.findById("profile-1");
 
-    expect(result).toBe(row);
+    expect(result).toEqual({ ok: true, data: row });
     expect(profileRepository.findById).toHaveBeenCalledWith(
       database,
       "profile-1",
@@ -57,7 +57,10 @@ describe("ProfileService", () => {
       { authUserId: "auth-2", username: "user2" },
     ]);
 
-    expect(result).toEqual([{ id: "profile-1" }, { id: "profile-2" }]);
+    expect(result).toEqual({
+      ok: true,
+      data: [{ id: "profile-1" }, { id: "profile-2" }],
+    });
     expect(transactionManager.inTransaction).toHaveBeenCalledTimes(1);
     expect(profileRepository.create).toHaveBeenNthCalledWith(1, {
       executor: tx,
