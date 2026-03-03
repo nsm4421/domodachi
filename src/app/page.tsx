@@ -88,6 +88,12 @@ export default function Home() {
             >
               로그인
             </Link>
+            <Link
+              className="text-muted-foreground hover:text-foreground inline-flex h-10 items-center rounded-lg px-2 text-sm font-medium underline underline-offset-4"
+              href="/mock/chat"
+            >
+              채팅 목업 보기
+            </Link>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">

@@ -67,6 +67,7 @@ export function AppShell({ children, initialAuth }: AppShellProps) {
         <AppNav
           className="flex flex-col gap-1"
           onNavigate={() => setIsNavOpen(false)}
+          isAuthenticated={initialAuth.isAuthenticated}
         />
       </aside>
 
